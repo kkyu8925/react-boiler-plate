@@ -1,6 +1,6 @@
-const express = require('express')
-const app = express()
-const port = 5000
+const express = require('express');
+const app = express();
+const port = 5000;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key');
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
   res.send('Hello World! nodemon test!!')
 })
 
-app.post('api/users/register', (req,res) => {
+app.post('/api/user/register', (req,res) => {
 
     // 회원 가입 시 필요한 정보 DB에 넣기
     const user = new User(req.body);
@@ -31,7 +31,7 @@ app.post('api/users/register', (req,res) => {
     })
 })
 
-app.post('api/users/login', (req, res) => {
+app.post('/api/user/login', (req, res) => {
   
   // 요청된 이메일을 DB에서 있는지 찾기
   User.findOne({ email: req.body.email}, (err, user) => {
@@ -62,7 +62,7 @@ app.post('api/users/login', (req, res) => {
   })
 })
 
-app.get('api/users/auth', auth, (req, res) => {
+app.get('/api/user/auth', auth, (req, res) => {
   // 여기까지 미들웨어를 통과해 왔다는 얘기는 auth = true
   res.status(200).json({
     _id: req.user._id,
@@ -76,11 +76,12 @@ app.get('api/users/auth', auth, (req, res) => {
   })
 })
 
-app.get('/api/users/logout', auth, (req, res) => {
+app.get('/api/user/logout', auth, (req, res) => {
+  // 찾은 후 업데이트 
   User.findOneAndUpdate({ _id: req.user._id}, 
-    { token: ""}
-    , (err, user) => {
-      if(err) return res.json({ success: false,err});
+    { token: ""} // 토큰 지우기
+    , (err) => {
+      if(err) return res.json({ success: false, err});
       return res.status(200).send({
         success: true
       })

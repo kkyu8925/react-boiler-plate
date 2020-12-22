@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const saltRounds = 10;  // bcrypt, slat를 이용해서 암호화
 const jwt = require('jsonwebtoken');
 
 const userSchema = mongoose.Schema({
@@ -35,9 +35,11 @@ const userSchema = mongoose.Schema({
 });
 
 // 비밀번호 bcrypt로 암호화
+// 'save' 함수 실행 전에!
 userSchema.pre('save',function(next) {
     let user = this;
 
+    // 비밀번호가 변경되었을때만 암호화를 해준다.
     if(user.isModified('password')) {
         bcrypt.genSalt(saltRounds,function(err, salt){
             if(err) return next(err)
@@ -56,7 +58,7 @@ userSchema.methods.comparePassword = function(plainPassword, cb) {
     // 비밀번호 암호화
     bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
         if(err) return cb(err);
-        cb(null, isMatch);
+        cb(null, isMatch); // null 값은 err가 없다
     })
 }
 
